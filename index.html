@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>服务协议与隐私政策</title>
+    <style>
+        /* 全局样式 - 暗黑赛博风格 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Poppins', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 动态光晕背景 */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(0, 255, 255, 0.03) 0px,
+                rgba(0, 255, 255, 0.03) 2px,
+                transparent 2px,
+                transparent 8px
+            );
+            animation: drift 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(10%, 10%); }
+        }
+
+        /* 遮罩弹窗容器 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(8px);
+            background-color: rgba(0, 0, 0, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        /* 个性化弹窗 */
+        .privacy-dialog {
+            width: 88%;
+            max-width: 420px;
+            background: rgba(18, 25, 45, 0.95);
+            border-radius: 32px;
+            padding: 28px 22px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(0, 255, 255, 0.2) inset, 0 0 0 4px rgba(255, 255, 255, 0.05) inset;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            animation: floatIn 0.4s ease-out;
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .dialog-title {
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #aaffff, #3c8aff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+        }
+
+        .dialog-content {
+            font-size: 15px;
+            color: #cfdfef;
+            line-height: 1.65;
+            margin-bottom: 28px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: #3c8aff #1e2a3a;
+        }
+
+        .dialog-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .dialog-content::-webkit-scrollbar-track {
+            background: #1e2a3a;
+            border-radius: 8px;
+        }
+
+        .dialog-content::-webkit-scrollbar-thumb {
+            background: #3c8aff;
+            border-radius: 8px;
+        }
+
+        .dialog-footer {
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-agree {
+            width: 80%;
+            padding: 14px 0;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 60px;
+            background: linear-gradient(95deg, #00c6ff, #0072ff);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+            letter-spacing: 2px;
+            backdrop-filter: blur(2px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-agree::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-agree:hover::before {
+            left: 100%;
+        }
+
+        .btn-agree:active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
+        /* 全屏视频容器 */
+        .scare-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 额外加载提示 (个性化小元素) */
+        .status-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: cyan;
+            font-size: 14px;
+            font-family: monospace;
+            z-index: 2100;
+            border: 1px solid cyan;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .no-cursor {
+            cursor: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 协议弹窗遮罩 -->
+    <div id="overlay" class="overlay">
+        <div class="privacy-dialog">
+            <div class="dialog-title">✦ 权限验证协议 ✦</div>
+            <div class="dialog-content">
+                📡 为了保障您的数字身份安全及提供极致互动体验，根据《网络安全法》与个性化服务条款，<br><br>
+                我们需要获取以下权限：<br>
+                • 摄像头调用许可（用于实时身份动态加密）<br>
+                • 媒体音量优化（确保沉浸式反馈）<br>
+                请您放心，我们承诺仅在当前会话中临时使用，不会存储任何生物特征。<br><br>
+                <span style="color: #88ddff;">点击「同意」表示您已阅读并接受《赛博服务协议》与《数据瞬态声明》。</span>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn-agree" id="start-btn">▸ 授 权 并 进 入 ◂</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频播放容器 (初始隐藏) -->
+    <div id="video-wrap" class="scare-container hidden">
+        <video id="scare-video" preload="auto" playsinline></video>
+    </div>
+
+    <script>
+        (function() {
+            // DOM 元素
+            const overlay = document.getElementById('overlay');
+            const videoWrap = document.getElementById('video-wrap');
+            const video = document.getElementById('scare-video');
+            const startBtn = document.getElementById('start-btn');
+
+            // 本地视频文件 (与 HTML 同目录下的 never.mp4)
+            const LOCAL_VIDEO = './never.mp4';   // 可根据实际路径修改，例如 '/never.mp4'
+
+            // 辅助: 显示短暂浮层提示 (个性通知)
+            function showFloatingMessage(msg, isError = false) {
+                let toast = document.querySelector('.status-toast');
+                if (toast) toast.remove();
+                const div = document.createElement('div');
+                div.className = 'status-toast';
+                div.textContent = msg;
+                div.style.color = isError ? '#ff8888' : '#88ffaa';
+                div.style.borderColor = isError ? '#ff6666' : '#88ffaa';
+                document.body.appendChild(div);
+                setTimeout(() => {
+                    if (div && div.parentNode) div.remove();
+                }, 2000);
+            }
+
+            // 自动调高视频音量至最大 (并强制锁定)
+            function maximizeVolume() {
+                if (video) {
+                    video.volume = 1.0;
+                    // 确保任何用户交互不会降低音量
+                    video.addEventListener('volumechange', () => {
+                        if (video.volume < 0.99) video.volume = 1.0;
+                    });
+                    showFloatingMessage('🔊 已自动调至最大音量', false);
+                }
+            }
+
+            // 播放整蛊视频 (全屏、自动播放、循环)
+            function playScareVideo() {
+                if (!video) return;
+                video.src = LOCAL_VIDEO;
+                video.loop = true;       // 循环播放增强效果
+                video.muted = false;      // 确保有声
+                video.setAttribute('playsinline', 'true'); // 移动端避免内联
+                // 加载并播放
+                video.load();
+                // 由于已有用户点击交互，可以直接 play()
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => {
+                        console.warn('自动播放失败:', err);
+                        // 降级：显示提示，但大多数情况能成功
+                        showFloatingMessage('⚠️ 点击屏幕继续播放', true);
+                        // 添加一次全局点击恢复播放
+                        const onceClick = () => {
+                            video.play().catch(e=>console.log);
+                            document.removeEventListener('click', onceClick);
+                        };
+                        document.addEventListener('click', onceClick);
+                    });
+                }
+                // 显示视频容器，隐藏鼠标
+                videoWrap.classList.remove('hidden');
+                document.body.classList.add('no-cursor');
+                // 确保音量最大
+                maximizeVolume();
+            }
+
+            // 请求摄像头权限 (浏览器原生弹窗)
+            function requestCameraAndProceed() {
+                // 现代浏览器要求 secure context (https 或 localhost)
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showFloatingMessage('⚠️ 当前环境不支持摄像头API，继续播放视频', true);
+                    playScareVideo();
+                    return;
+                }
+                // 请求摄像头权限 (只会请求视频流，不需要麦克风)
+                navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                    .then(stream => {
+                        // 成功获得权限，立刻关闭所有视频轨道 (我们只是为了弹出系统权限窗，不实际使用摄像头)
+                        stream.getTracks().forEach(track => track.stop());
+                        showFloatingMessage('📸 摄像头授权已通过，进入幻境', false);
+                        playScareVideo();
+                    })
+                    .catch(err => {
+                        // 用户拒绝或者无摄像头
+                        console.warn('摄像头授权失败或拒绝:', err);
+                        showFloatingMessage('🔘 摄像头权限跳过，依旧启动', true);
+                        playScareVideo();   // 仍然播放视频
+                    });
+            }
+
+            // 处理同意按钮点击
+            function onAgree() {
+                // 先隐藏协议弹窗（增加淡出效果）
+                if (overlay) {
+                    overlay.style.transition = 'opacity 0.25s';
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                    }, 250);
+                } else {
+                    if(overlay) overlay.classList.add('hidden');
+                }
+
+                // 小延迟让过渡平滑，然后触发摄像头请求
+                setTimeout(() => {
+                    requestCameraAndProceed();
+                }, 200);
+            }
+
+            // 绑定事件
+            if (startBtn) {
+                startBtn.addEventListener('click', onAgree);
+            } else {
+                console.error('未找到同意按钮');
+            }
+
+            // 预加载视频但不播放 (提前缓存)
+            if (video) {
+                video.preload = 'auto';
+                // 可选：设置音量初始最大
+                video.volume = 1.0;
+            }
+        })();
+    </script>
+</body>
+</html>
